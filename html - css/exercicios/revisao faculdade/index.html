@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Revisão Faculdade</title>
+    <script>
+        function troca(){
+            document.getElementById("paragrafo1").innerHTML = "O mouse entrou no parágrafo"; 
+        }
+        function volta(){
+            document.getElementById("paragrafo1").innerHTML= "Eu sou um parágrafo"        }
+        function alerta(){
+            alert(document.getElementById("nome").value);
+        }
+    </script>
+    <style>
+        body {
+            background-color: rgb(241, 241, 225);
+            color: blue;
+        }
+        #paragrafo1 {
+            color:  red;
+        }
+
+        .cor{
+            color: coral;
+        }
+    </style>
+</head>
+<body>
+    <h1 class="cor">Revisão Faculdade</h1>
+    <p id="paragrafo1" onmouseenter="troca()" onmouseout="volta()">Eu sou um parágrafo</p>
+    <span>Texto Curto</span>
+    <span>Eu sou outro texto curto</span>
+    <div contenteditable="true" >
+        <p>Texto Aleatório</p>
+    </div>
+    <div>
+        <p>Eu sou um parágrafo dentro de uma div</p>
+        <input type="button" value="Estou dentro de uma div" >
+    </div>
+    <label class="cor" for="nome">Insira seu nome:</label>
+    <input type="text" name="" id="nome" placeholder="Nome Completo" required autocomplete="on">
+    <input type="Number" name="" id="" step="10">
+    <input type="button" value="Enviar" onclick="alerta()">
+</body>
+</html>

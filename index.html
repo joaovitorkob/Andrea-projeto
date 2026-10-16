@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Estudo</title>
+
+<style>
+
+body{
+    background:#111;
+    color:white;
+    font-family:Arial, sans-serif;
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+    align-items:center;
+    min-height:100vh;
+    text-align:center;
+    margin:0;
+}
+
+.container{
+    max-width:700px;
+    padding:30px;
+}
+
+h1{
+    font-size:3rem;
+    margin-bottom:30px;
+}
+
+.numero{
+    font-size:4rem;
+    font-weight:bold;
+    margin:20px 0;
+}
+
+.barra-container{
+    width:320px;
+    height:25px;
+    background:#333;
+    border-radius:20px;
+    margin:15px auto;
+    overflow:hidden;
+}
+
+.barra{
+    height:100%;
+    width:0%;
+    background:white;
+    transition:width 1s;
+}
+
+#tempoBtn,
+.cloneBtn {
+    margin-top:25px;
+    padding:18px 34px;
+    border:none;
+    border-radius:30px;
+    cursor:pointer;
+    font-size:17px;
+    font-weight:700;
+    letter-spacing:1px;
+    color:#fff;
+    background:linear-gradient(135deg,#ff4f79,#ffb347,#7f5af0);
+    box-shadow:0 20px 40px rgba(255,79,121,0.35), 0 0 20px rgba(127,90,240,0.2);
+    transition:transform 0.25s ease, box-shadow 0.25s ease, opacity 0.25s ease;
+}
+
+#tempoBtn:hover,
+.cloneBtn:hover{
+    transform:scale(1.08);
+}
+
+#tempoBtn:active,
+.cloneBtn:active{
+    transform:scale(0.98);
+}
+
+#tempoBtn:disabled,
+.cloneBtn:disabled{
+    cursor:progress;
+    opacity:0.7;
+}
+
+#mensagemTempo{
+    min-height:30px;
+    margin-top:18px;
+    opacity:0.95;
+    font-size:1rem;
+    color:#ffdede;
+    text-shadow:0 0 10px rgba(255,255,255,0.15);
+}
+
+#buttonStack{
+    display:flex;
+    flex-wrap:wrap;
+    justify-content:center;
+    gap:12px;
+    margin-top:18px;
+    max-width:700px;
+}
+
+.button-appear {
+    animation: buttonAppear 0.8s cubic-bezier(0.16,1,0.3,1) forwards;
+}
+
+@keyframes buttonAppear {
+    from {
+        opacity: 0;
+        transform: scale(0.7);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+.flash {
+    animation: flashGlow 1.6s ease-in-out;
+}
+
+@keyframes flashGlow {
+    0%,100% { box-shadow: 0 0 0 rgba(255,255,255,0); }
+    25% { box-shadow: 0 0 35px rgba(255,255,255,0.8); }
+    50% { box-shadow: 0 0 25px rgba(255,255,255,0.4); }
+    75% { box-shadow: 0 0 35px rgba(255,255,255,0.8); }
+}
+
+#mainWrapper{
+    opacity:0;
+    visibility:hidden;
+    transform:scale(0.96);
+    transition:opacity 0.8s ease, transform 0.8s ease, visibility 0.8s ease;
+}
+
+#mainWrapper.visible{
+    opacity:1;
+    visibility:visible;
+    transform:scale(1);
+}
+
+.hidden{
+    display:none;
+}
+
+</style>
+</head>
+
+<body>
+
+<div id="mainWrapper" class="hidden">
+<div class="container" id="siteContent">
+
+    <h1>Nossas distâncias</h1>
+
+    <p><strong>17 anos</strong> desde o lançamento do primeiro episódio de The Vampire Diares</p>
+
+    <p><strong>10 anos</strong> desde que começamos a estudar juntos</p>
+
+    <p><strong>4 anos</strong> desde que começamos a conversar de verdade</p>
+
+    <p><strong>7 Meses</strong> data estipulada para o lançamento da vigésima temporada de heartland</p>
+
+    <p><strong>45 dias</strong> entre nossos aniversários</p>
+
+
+    <br>
+
+    <h2>Porém faltam apenas...</h2>
+
+    <div class="numero" id="contador"></div>
+
+    <p>Para estarmos juntos para comermos hamburitos🍔❤️</p>
+
+    <div class="missao">
+
+        <h3>Missão: Hamburitos</h3>
+
+        <div class="barra-container">
+            <div class="barra" id="barra"></div>
+        </div>
+
+        <p id="progressoTexto"></p>
+
+    </div>
+
+    </div>
+</div>
+
+<div id="buttonContainer"></div>
+<div id="buttonStack"></div>
+<p id="startHint">Clique em qualquer lugar da tela</p>
+<p id="mensagemTempo"></p>
+
+<script>
+
+// SEXTA-FEIRA 12/06 ÀS 19:00
+let encontro = new Date("2026-06-12T19:00:00");
+const novaData = new Date("2026-06-16T19:00:00");
+let dataRemarcada = false;
+
+// COMEÇO DA CONTAGEM
+const inicio = new Date("2026-06-10T00:00:00");
+const mainWrapper = document.getElementById("mainWrapper");
+const siteContent = document.getElementById("siteContent");
+let tempoBtn;
+const buttonContainer = document.getElementById("buttonContainer");
+const buttonStack = document.getElementById("buttonStack");
+const startHint = document.getElementById("startHint");
+let extraClickCount = 0;
+let animationPlayed = false;
+
+function atualizar(){
+
+    const agora = new Date();
+    const diferenca = encontro - agora;
+
+    if(diferenca <= 0){
+
+        document.getElementById("contador").innerHTML =
+        "Missão adiada 🍔💔";
+
+        document.getElementById("barra").style.width =
+        "100%";
+
+        return;
+    }
+
+    const dias =
+    Math.floor(diferenca / (1000*60*60*24));
+
+    const horas =
+    Math.floor(
+        (diferenca % (1000*60*60*24))
+        / (1000*60*60)
+    );
+
+    const minutos =
+    Math.floor(
+        (diferenca % (1000*60*60))
+        / (1000*60)
+    );
+
+    const segundos =
+    Math.floor(
+        (diferenca % (1000*60))
+        / 1000
+    );
+
+    document.getElementById("contador").innerHTML =
+    `${dias}d ${horas}h ${minutos}m ${segundos}s`;
+
+}
+
+function atualizarProgresso(){
+
+    const agora = new Date();
+
+    const total = encontro - inicio;
+    const atual = agora - inicio;
+
+    let porcentagem =
+    (atual / total) * 100;
+
+    if(porcentagem < 0)
+        porcentagem = 0;
+
+    if(porcentagem > 100)
+        porcentagem = 100;
+
+    document.getElementById("barra").style.width =
+    porcentagem + "%";
+
+    document.getElementById("progressoTexto").innerHTML =
+    "Preparação dos hamburitos: " +
+    porcentagem.toFixed(1) +
+    "% ";
+
+}
+
+const frases = [
+
+    "Tentando acelerar o tempo...",
+
+    "Ainda tentando...",
+
+    " Não foi dessa vez.",
+
+    "Segundo Einstein, não é tão simples.",
+
+    "Os hamburitos terão que esperar mais um pouquinho ",
+
+    " Mas sexta está chegando.",
+
+    "Sistema detectou ansiedade excessiva.",
+
+    "Erro 404: sexta-feira não encontrada.",
+
+    "Vitória, eu sei que você tá tentando ",
+
+    "Eu também queria que chegasse logo ❤️"
+
+];
+
+let clique = 0;
+
+document.body.addEventListener("click", function revealInitialButton() {
+    if (!tempoBtn) {
+        createTempoBtn();
+        buttonContainer.appendChild(tempoBtn);
+    }
+    if (startHint) startHint.classList.add("hidden");
+    document.body.removeEventListener("click", revealInitialButton);
+});
+
+function createTempoBtn() {
+    tempoBtn = document.createElement("button");
+    tempoBtn.id = "tempoBtn";
+    tempoBtn.className = "cloneBtn button-appear";
+    tempoBtn.innerText = "Clique para ver algo incrível!";
+    tempoBtn.addEventListener("click", tempoBtnClickHandler);
+}
+
+function addExtraButton() {
+    const button = tempoBtn.cloneNode(true);
+    button.removeAttribute("id");
+    button.className = tempoBtn.className;
+    button.classList.remove("button-appear");
+    button.disabled = false;
+    button.addEventListener("click", () => {
+        tempoBtn.click();
+    });
+    buttonStack.appendChild(button);
+}
+
+function showFinalAnimation() {
+    if (animationPlayed) return;
+    animationPlayed = true;
+    mainWrapper.classList.add("flash");
+    tempoBtn.classList.add("flash");
+    document.getElementById("mensagemTempo").innerHTML =
+        "";
+    setTimeout(() => {
+        mainWrapper.classList.remove("flash");
+        tempoBtn.classList.remove("flash");
+    }, 1800);
+}
+
+function tempoBtnClickHandler() {
+    if (!dataRemarcada) {
+        tempoBtn.disabled = true;
+        tempoBtn.innerText = "Carregando...";
+        document.getElementById("mensagemTempo").innerHTML =
+            "Os astros estão se alinhando...";
+
+        setTimeout(() => {
+            encontro = novaData;
+            dataRemarcada = true;
+            mainWrapper.classList.remove("hidden");
+            mainWrapper.classList.add("visible");
+            tempoBtn.disabled = false;
+            tempoBtn.innerText = "Avançar tempo";
+            document.getElementById("mensagemTempo").innerHTML =
+                "Clique para fazer o tempo avançar!";
+
+            siteContent.innerHTML = `
+                <h1>Nova data marcada com sucesso! 🥳</h1>
+                <p><strong>17 anos</strong> desde o lançamento do primeiro episódio de The Vampire Diares</p>
+                <p><strong>10 anos</strong> desde que começamos a estudar juntos</p>
+                <p><strong>4 anos</strong> desde que começamos a conversar de verdade</p>
+                <p><strong>7 Meses</strong> data estipulada para o lançamento da vigésima temporada de heartland</p>
+                <p><strong>45 dias</strong> entre nossos aniversários</p>
+                <br>
+                <h2>Porém faltam apenas...</h2>
+                <div class="numero" id="contador"></div>
+                <p>Para estarmos juntos para comermos hamburitos🍔❤️</p>
+                <div class="missao">
+                    <h3>Missão: Hamburitos</h3>
+                    <div class="barra-container">
+                        <div class="barra" id="barra"></div>
+                    </div>
+                    <p id="progressoTexto"></p>
+                </div>
+            `;
+
+            atualizar();
+            atualizarProgresso();
+            extraClickCount = 0;
+            buttonStack.innerHTML = "";
+        }, 1400);
+    } else {
+        extraClickCount++;
+        addExtraButton();
+        document.getElementById("mensagemTempo").innerHTML =
+            `Infelizmente não tem como...`;
+
+        if (extraClickCount >= 4) {
+            showFinalAnimation();
+        }
+    }
+
+    clique++;
+
+}
+
+atualizar();
+atualizarProgresso();
+
+setInterval(atualizar,1000);
+setInterval(atualizarProgresso,1000);
+
+</script>
+
+</body>
+</html>

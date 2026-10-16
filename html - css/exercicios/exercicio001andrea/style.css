@@ -1,0 +1,11 @@
+body{
+    color: white
+}
+body{
+    background-color: rgb(122, 94, 40)
+}
+header{
+    display:flex;
+    justify-content:space-evenly;
+    word-break: break-word;
+}
